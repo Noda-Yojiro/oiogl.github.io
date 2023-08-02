@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>根据网络知道国家和地区</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #country-info {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>根据网络知道国家和地区</h1>
+    <P>移动端不支持获取经纬度</P>
+    <button onclick="getInfo()">获取当前地理位置信息</button>
+    <div id="location-info"></div>
+    <div id="country-info" style="color: #24FA11;"></div>
+    <div id="time-info"></div>
+    <div id="province-info"></div>
+    <div id="city-info"></div>
+    <div id="district-info"></div>
+    <div id="street-info"></div>
+
+    <script>
+function getInfo() {
+  // 使用一个公开的IP地址查询API获取用户的IP地址
+  fetch('https://ipapi.co/json/')
+    .then((response) => response.json())
+    .then((data) => {
+      // 解析API返回的数据，获取国家和地区信息
+      const country = data.country_name;
+      const region = data.region;
+
+      // 更新页面显示国家和地区信息
+      const countryInfoDiv = document.getElementById('country-info');
+      countryInfoDiv.innerHTML = `
+          <p>您所在的国家：${country}</p>
+          <p>您所在的地区：${region}</p>
+      `;
+    })
+    .catch((error) => {
+      console.error('获取国家和地区信息失败：', error);
+    });
+
+  // 更新当前时间、日期和秒数
+  function updateTime() {
+    const currentTime = new Date();
+    const year = currentTime.getFullYear();
+    const month = currentTime.getMonth() + 1;
+    const day = currentTime.getDate();
+    const hour = currentTime.getHours();
+    const minute = currentTime.getMinutes();
+    const second = currentTime.getSeconds();
+
+    // 更新页面显示当前时间、日期和秒数
+    const timeInfoDiv = document.getElementById('time-info');
+    timeInfoDiv.innerHTML = `
+        <p>当前时间：${hour}:${minute}:${second}</p>
+        <p>当前日期：${year}年${month}月${day}日</p>
+    `;
+  }
+
+  // 初始化时间
+  updateTime();
+
+  // 每秒更新一次时间
+  setInterval(updateTime, 1000);
+
+  // 使用浏览器内置的Geolocation API获取经纬度
+  navigator.geolocation.getCurrentPosition(
+    (position) => {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+
+      // 更新页面显示经纬度信息
+      const locationInfoDiv = document.getElementById('location-info');
+      locationInfoDiv.innerHTML = `
+          <p>您所在的纬度：${latitude}</p>
+          <p>您所在的经度：${longitude}</p>
+      `;
+    },
+    (error) => {
+      console.error('获取经纬度信息失败：', error);
+    }
+  );
+}
+
+    </script>
+</body>
+</html>
